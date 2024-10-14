@@ -1,0 +1,48 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 20px;
+  }
+  
+  #grid-container {
+    display: grid;
+    grid-template-columns: repeat(5, 100px);
+    grid-template-rows: repeat(5, 100px);
+    gap: 5px;
+    margin: 0 auto;
+  }
+  
+  .grid-cell {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ccc;
+    position: relative;
+    font-size: 18px;
+    transition: background-color 0.5s, color 0.5s;
+  }
+  
+  .obstacle {
+    background-color: #444;
+    color: white;
+  }
+  
+  .goal {
+    background-color: green;
+    color: white;
+  }
+  
+  .arrows {
+    font-size: 30px;
+  }
+  
+  .value {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    font-size: 12px;
+    color: #777;
+  }
+  
