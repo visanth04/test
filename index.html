@@ -1,17 +1,156 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GPI in Grid World</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Hashing with Multiple Hash Functions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 20px;
+        }
+        input {
+            padding: 10px;
+            font-size: 18px;
+            margin: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+        }
+        .result, .params, .hash-table {
+            margin-top: 20px;
+            font-size: 20px;
+        }
+        table {
+            margin: 0 auto;
+            border-collapse: collapse;
+            width: 50%;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+    </style>
 </head>
 <body>
-  <h1>Generalized Policy Iteration (GPI) in Grid World</h1>
-  <div id="grid-container"></div>
-  <button id="run-btn">Run GPI</button>
-  <button id="reset-btn">Reset</button>
 
-  <script src="script.js"></script>
+    <h1>Universal Hashing Visualization</h1>
+
+    <div>
+        <label for="key">Enter a Key: </label>
+        <input type="number" id="key" placeholder="Enter a number">
+        <button onclick="performHash()">Hash Key</button>
+    </div>
+
+    <div class="params">
+        <p><strong>Hash Function Family (each function in the form h(x) = (a * x + b) % p % m):</strong></p>
+        <p><span id="family"></span></p>
+    </div>
+
+    <div class="result" id="result"></div>
+
+    <div class="hash-table">
+        <h2>Hash Table</h2>
+        <table id="hashTable">
+            <tr>
+                <th>Bucket</th>
+                <th>Stored Keys</th>
+            </tr>
+        </table>
+    </div>
+
+    <script>
+        // Number of buckets and prime number for universal hashing
+        const m = 10;  // Number of buckets in the hash table
+        const p = 31;  // A prime number larger than the maximum possible key
+
+        // Family of hash functions (we'll create 5 different hash functions)
+        let familyOfHashFunctions = [];
+        for (let i = 0; i < 5; i++) {
+            const a = Math.floor(Math.random() * (p - 1)) + 1;  // Random a from [1, p-1]
+            const b = Math.floor(Math.random() * p);            // Random b from [0, p-1]
+            familyOfHashFunctions.push({ a, b });
+        }
+
+        // Display the family of hash functions
+        function displayHashFamily() {
+            const familyDiv = document.getElementById("family");
+            familyDiv.innerHTML = familyOfHashFunctions.map((func, index) => {
+                return `h${index + 1}(x) = (${func.a} * x + ${func.b}) % ${p} % ${m}`;
+            }).join("<br>");
+        }
+
+        // Initialize an empty hash table
+        const hashTable = Array(m).fill(null).map(() => []);
+
+        // Choose a random hash function from the family
+        function chooseRandomHashFunction() {
+            const randomIndex = Math.floor(Math.random() * familyOfHashFunctions.length);
+            return familyOfHashFunctions[randomIndex];
+        }
+
+        // Hash function using a randomly chosen function from the family
+        function universalHash(key, hashFunc) {
+            const { a, b } = hashFunc;
+            return ((a * key + b) % p) % m;
+        }
+
+        // Perform hashing and store key in the appropriate bucket
+        function performHash() {
+            const key = document.getElementById("key").value;
+            if (key === "") {
+                document.getElementById("result").textContent = "Please enter a valid key!";
+                return;
+            }
+
+            // Randomly choose a hash function from the family
+            const chosenHashFunction = chooseRandomHashFunction();
+            const bucket = universalHash(parseInt(key), chosenHashFunction);
+
+            // Add the key to the hash table bucket
+            hashTable[bucket].push(key);
+
+            // Display the result
+            document.getElementById("result").textContent = `Key ${key} is hashed to bucket: ${bucket} using h(x) = (${chosenHashFunction.a} * x + ${chosenHashFunction.b}) % ${p} % ${m}`;
+
+            // Update the hash table display
+            updateHashTable();
+        }
+
+        // Update the hash table display in HTML
+        function updateHashTable() {
+            const table = document.getElementById("hashTable");
+            table.innerHTML = `
+                <tr>
+                    <th>Bucket</th>
+                    <th>Stored Keys</th>
+                </tr>
+            `;
+
+            for (let i = 0; i < m; i++) {
+                const row = document.createElement("tr");
+                const bucketCell = document.createElement("td");
+                const keysCell = document.createElement("td");
+
+                bucketCell.textContent = i;
+                keysCell.textContent = hashTable[i].length ? hashTable[i].join(", ") : "Empty";
+
+                row.appendChild(bucketCell);
+                row.appendChild(keysCell);
+                table.appendChild(row);
+            }
+        }
+
+        // Initialize the empty table at the start
+        displayHashFamily();
+        updateHashTable();
+    </script>
+
 </body>
 </html>
